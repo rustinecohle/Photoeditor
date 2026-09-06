@@ -7,14 +7,14 @@ A lightweight BMP image editing tool with a graphical interface, built in C usin
 
 * Open and save 24-bit uncompressed `.bmp` images
 * Grayscale conversion
-* Brightness adjustment (3 preset levels)
+* Brightness adjustment 
 * Color invert
 * Horizontal and vertical flip
-* Rotate (90° / 180° / 270°, clockwise or counterclockwise)
+* Rotate (90°  clockwise )
 * Crop to a custom region
 * Blur (3x3 box blur)
 * Sharpen (3x3 kernel)
-* Undo (up to 10 steps)
+* Undo ( 1 step)
 
 ## Requirements
 
