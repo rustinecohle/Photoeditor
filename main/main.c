@@ -25,7 +25,7 @@ void updateImageDisplay(void);
 
 
 
-/* undo process */
+/* from here the undo process begins */
 
 unsigned char *previousPixels = NULL;
 int previousWidth = 0;
@@ -116,11 +116,7 @@ void undo(Ihandle *ih)
     image->infoheader.width = previousWidth;
     image->infoheader.height = previousHeight;
 
-    /*
-       Once used, the remembered version
-       is gone - undo can't be pressed
-       again until a new change is made.
-    */
+  
 
     free(previousPixels);
     previousPixels = NULL;
