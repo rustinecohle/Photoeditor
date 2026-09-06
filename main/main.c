@@ -25,9 +25,7 @@ void updateImageDisplay(void);
 
 
 
-/* =========================
-   UNDO (single step only)
-   ========================= */
+/* undo process */
 
 unsigned char *previousPixels = NULL;
 int previousWidth = 0;
@@ -52,10 +50,7 @@ void saveUndo(void)
         return;
 
     /*
-       Throw away whatever was remembered
-       before, and remember the CURRENT
-       image instead. Only ever one
-       previous version is kept.
+      clearing the previous steps and only remembering latest step
     */
 
     if (previousPixels != NULL) {
@@ -135,9 +130,7 @@ void undo(Ihandle *ih)
 }
 
 
-/* =========================
-   DISPLAY IMAGE
-   ========================= */
+/* for displaying image*/
 
 void updateImageDisplay(void)
 {
@@ -154,12 +147,7 @@ void updateImageDisplay(void)
     if (rgb == NULL)
         return;
 
-    /*
-       image->pixels is already stored as
-       RGB in memory (openBMP converts it
-       from the file's BGR order), so we
-       can copy it directly.
-    */
+
 
     for (int i = 0; i < width * height * 3; i++) {
         rgb[i] = image->pixels[i];
@@ -200,9 +188,7 @@ void updateImageDisplay(void)
 }
 
 
-/* =========================
-   OPEN
-   ========================= */
+/* openings */
 
 int open_cb(Ihandle *ih)
 {
@@ -280,9 +266,7 @@ int open_cb(Ihandle *ih)
 }
 
 
-/* =========================
-   SAVE
-   ========================= */
+/* saving */
 
 int save_cb(Ihandle *ih)
 {
@@ -362,9 +346,7 @@ int save_cb(Ihandle *ih)
 }
 
 
-/* =========================
-   GRAYSCALE
-   ========================= */
+/* gray */
 
 int grayscale_cb(Ihandle *ih)
 {
@@ -388,10 +370,9 @@ int grayscale_cb(Ihandle *ih)
 }
 
 
-/* =========================
-   BRIGHTNESS (user-specified,
-   positive or negative)
-   ========================= */
+/* 
+   BRIGHTNESS 
+   */
 
 int brightness_cb(Ihandle *ih)
 {
@@ -507,9 +488,7 @@ int brightness_cb(Ihandle *ih)
 }
 
 
-/* =========================
-   INVERT
-   ========================= */
+/* inverse */
 
 int invert_cb(Ihandle *ih)
 {
@@ -533,9 +512,9 @@ int invert_cb(Ihandle *ih)
 }
 
 
-/* =========================
+/* 
    HORIZONTAL FLIP
-   ========================= */
+   */
 
 int horizontal_cb(Ihandle *ih)
 {
@@ -559,9 +538,9 @@ int horizontal_cb(Ihandle *ih)
 }
 
 
-/* =========================
+/* 
    VERTICAL FLIP
-   ========================= */
+  */
 
 int vertical_cb(Ihandle *ih)
 {
@@ -585,10 +564,7 @@ int vertical_cb(Ihandle *ih)
 }
 
 
-/* =========================
-   ROTATE (fixed 90 degrees
-   clockwise, per spec)
-   ========================= */
+/* rotation */
 
 int rotate_cb(Ihandle *ih)
 {
@@ -612,9 +588,7 @@ int rotate_cb(Ihandle *ih)
 }
 
 
-/* =========================
-   CROP
-   ========================= */
+/* cropping */
 
 int crop_cb(Ihandle *ih)
 {
@@ -863,9 +837,7 @@ int crop_cb(Ihandle *ih)
 }
 
 
-/* =========================
-   BLUR
-   ========================= */
+/* blurring  */
 
 int blur_cb(Ihandle *ih)
 {
@@ -889,9 +861,7 @@ int blur_cb(Ihandle *ih)
 }
 
 
-/* =========================
-   SHARPEN
-   ========================= */
+/* shapening with kernel aplifying idea */
 
 int sharpen_cb(Ihandle *ih)
 {
@@ -915,9 +885,7 @@ int sharpen_cb(Ihandle *ih)
 }
 
 
-/* =========================
-   EXIT
-   ========================= */
+/* exits*/
 
 int exit_cb(Ihandle *ih)
 {
@@ -934,18 +902,14 @@ int exit_cb(Ihandle *ih)
 }
 
 
-/* =========================
-   MAIN
-   ========================= */
+
 
 int main(int argc, char **argv)
 {
     IupOpen(&argc, &argv);
 
 
-    /* =========================
-       BUTTONS
-       ========================= */
+    /* iup buttons i used ai for the tutorials */
 
     Ihandle *openButton =
         IupButton("Open BMP", NULL);
@@ -987,9 +951,7 @@ int main(int argc, char **argv)
         IupButton("Exit", NULL);
 
 
-    /* =========================
-       CALLBACKS
-       ========================= */
+    /* callbacks*/
 
     IupSetCallback(
         openButton,
@@ -1070,9 +1032,7 @@ int main(int argc, char **argv)
     );
 
 
-    /* =========================
-       IMAGE DISPLAY
-       ========================= */
+    /* display */
 
     imageBox =
         IupLabel(NULL);
@@ -1089,13 +1049,7 @@ int main(int argc, char **argv)
         "YES"
     );
 
-    /*
-       Give the label a placeholder image
-       BEFORE the dialog is shown, so IUP
-       creates it as an image-type label
-       from the start (Windows driver
-       decides text-vs-image at map time).
-    */
+
 
     unsigned char placeholderPixel[3] =
         { 240, 240, 240 };
@@ -1110,9 +1064,7 @@ int main(int argc, char **argv)
     );
 
 
-    /* =========================
-       BUTTON ROWS
-       ========================= */
+
 
     Ihandle *row1 =
         IupHbox(
@@ -1168,9 +1120,7 @@ int main(int argc, char **argv)
     );
 
 
-    /* =========================
-       MAIN LAYOUT
-       ========================= */
+    
 
     Ihandle *mainBox =
         IupVbox(
