@@ -43,6 +43,8 @@ git clone https://github.com/rustinecohle/Photoeditor.git
 cd Photoeditor\main
 .\app.exe
 ```
+the app.exe is old version will be updated soon
+
 ## Screenshots
 
 ### Opening Panel
