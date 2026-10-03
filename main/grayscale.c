@@ -8,9 +8,9 @@ void grayscale(BMPImage *image)
 
         int position = i * 3;
 
-        unsigned char B = image->pixels[position];
+        unsigned char R = image->pixels[position];
         unsigned char G = image->pixels[position + 1];
-        unsigned char R = image->pixels[position + 2];
+        unsigned char B = image->pixels[position + 2];
 
         unsigned char gray = 0.299 * R +
                              0.587 * G +

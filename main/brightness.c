@@ -8,9 +8,9 @@ void brightness(BMPImage *image, int level)
 
         int position = i * 3;
 
-        int B = image->pixels[position] + level;
+        int R = image->pixels[position] + level;
         int G = image->pixels[position + 1] + level;
-        int R = image->pixels[position + 2] + level;
+        int B = image->pixels[position + 2] + level;
 
         if (B > 255)
             B = 255;
@@ -30,8 +30,8 @@ void brightness(BMPImage *image, int level)
         if (R < 0)
             R = 0;
 
-        image->pixels[position] = B;
+        image->pixels[position] = R;
         image->pixels[position + 1] = G;
-        image->pixels[position + 2] = R;
+        image->pixels[position + 2] = B;
     }
 }

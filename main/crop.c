@@ -1,35 +1,21 @@
-#include <stdlib.h>
 #include "crop.h"
-
-void crop(BMPImage *image,
-          int startX,
-          int startY,
-          int cropWidth,
-          int cropHeight)
+#include <stdlib.h>
+void crop(BMPImage *image, int startX, int startY, int cropWidth, int cropHeight)
 {
     if (startX < 0 || startY < 0)
         return;
-
     if (cropWidth <= 0 || cropHeight <= 0)
         return;
-
     if (startX + cropWidth > image->width)
         return;
-
     if (startY + cropHeight > image->height)
         return;
-
     unsigned char *cropped;
-
     cropped = malloc(cropWidth * cropHeight * 3);
-
     if (cropped == NULL)
         return;
-
-    for (int y = 0; y < cropHeight; y++) {
-
-        for (int x = 0; x < cropWidth; x++) {
-
+    for (int y=0; y<cropHeight; y++){
+        for(int x=0; x<cropWidth; x++){
             int sourceX = startX + x;
             int sourceY = startY + y;
 
@@ -50,7 +36,7 @@ void crop(BMPImage *image,
         }
     }
 
-    free(image->pixels);
+ free(image->pixels);
 
     image->pixels = cropped;
 

@@ -1,8 +1,8 @@
 #include "sharpen.h"
 #include <stdlib.h>
 
-void sharpen(BMPImage *image)
-{
+void sharpen(BMPImage *image){
+
     int width = image->width;
     int height = image->height;
 
@@ -16,19 +16,13 @@ void sharpen(BMPImage *image)
         { -1,  5, -1 },
         {  0, -1,  0 }
     };
-
-    for (int y = 0; y < height; y++) {
-
-        for (int x = 0; x < width; x++) {
-
-            int sumB = 0;
-            int sumG = 0;
-            int sumR = 0;
-
-            for (int ky = -1; ky <= 1; ky++) {
-
-                for (int kx = -1; kx <= 1; kx++) {
-
+    for (int y=0; y < height; y++){
+        for(int x=0; x < width; x++){
+            int sumB=0;
+            int sumG=0;
+            int sumR=0;
+            for(int ky=-1; ky<2;ky++){
+                for(int kx=-1; kx<2; ky++){
                     int neighborX = x + kx;
                     int neighborY = y + ky;
 
@@ -43,19 +37,16 @@ void sharpen(BMPImage *image)
 
                     if (neighborY >= height)
                         neighborY = height - 1;
-
-                    int position =
-                        (neighborY * width + neighborX) * 3;
-
-                    int weight = kernel[ky + 1][kx + 1];
+                    int position=(neighborY*width+neighborX)*3;
+                    int weight=kernel[ky + 1][kx + 1];
 
                     sumB += image->pixels[position] * weight;
                     sumG += image->pixels[position + 1] * weight;
                     sumR += image->pixels[position + 2] * weight;
                 }
-            }
-
-            if (sumB < 0) sumB = 0;
+            
+        
+        if (sumB < 0) sumB = 0;
             if (sumB > 255) sumB = 255;
 
             if (sumG < 0) sumG = 0;
@@ -75,4 +66,7 @@ void sharpen(BMPImage *image)
     free(image->pixels);
 
     image->pixels = sharpened;
+    }
+
+
 }

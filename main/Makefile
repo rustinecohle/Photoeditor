@@ -1,35 +1,40 @@
 CC = gcc
-CFLAGS = -Wall -Wextra -O2 -Ithird_party/iup/include $(shell pkg-config --cflags gtk+-3.0)
-LDFLAGS = -Lthird_party/iup/lib -Wl,-rpath,'$$ORIGIN/third_party/iup/lib'
+CFLAGS ?= -Wall -Wextra -g
+CPPFLAGS ?=
+LDFLAGS ?=
 
-SRCS = main.c \
-       openbmp.c \
-       grayscale.c \
-       brightness.c \
-       invert.c \
-       flip.c \
-       rotate.c \
-       crop.c \
-       blur.c \
-       sharpen.c
+SOURCES = main.c openbmp.c grayscale.c brightness.c invert.c flip.c rotate.c crop.c blur.c sharpen.c
+OBJECTS = $(SOURCES:.c=.o)
 
-OBJS = $(SRCS:.c=.o)
-TARGET = bmpedit
+ifeq ($(OS),Windows_NT)
+CC = C:/msys64/mingw64/bin/gcc.exe
+IUP_ROOT ?= C:/iup
+CPPFLAGS += -I$(IUP_ROOT)/include
+IUP_LIBS ?= -L$(IUP_ROOT) -liup -lgdi32 -luser32 -lole32 -luuid -lcomdlg32 -lcomctl32 -lwinspool -lshell32 -ladvapi32 -lwinmm
+TARGET = photoeditor.exe
+RUN = .\$(TARGET)
+RM = del /Q
+else
+IUP_CFLAGS ?= $(shell pkg-config --cflags iup 2>/dev/null)
+IUP_LIBS ?= $(shell pkg-config --libs iup 2>/dev/null || printf '%s' '-liup')
+CPPFLAGS += $(IUP_CFLAGS)
+TARGET = photoeditor
+RUN = ./$(TARGET)
+RM = rm -f
+endif
 
-IUP_LIBS = -liup $(shell pkg-config --libs gtk+-3.0) -lm
-
-.PHONY: all clean run
+.PHONY: all run clean
 
 all: $(TARGET)
 
-$(TARGET): $(OBJS)
-	$(CC) $(OBJS) $(LDFLAGS) -o $(TARGET) $(IUP_LIBS)
+$(TARGET): $(OBJECTS)
+	$(CC) $(LDFLAGS) -o $@ $(OBJECTS) $(IUP_LIBS)
 
 %.o: %.c
-	$(CC) $(CFLAGS) -c $< -o $@
+	$(CC) $(CPPFLAGS) $(CFLAGS) -c $< -o $@
 
 run: $(TARGET)
-	./$(TARGET)
+	$(RUN)
 
 clean:
-	rm -f $(OBJS) $(TARGET)
+	$(RM) $(OBJECTS) $(TARGET)

@@ -78,18 +78,18 @@ void saveUndo(void)
 }
 
 
-void undo(Ihandle *ih)
+int undo(Ihandle *ih)
 {
     (void)ih;
 
     if (image == NULL) {
         IupMessage("Undo", "No image is open.");
-        return;
+        return IUP_DEFAULT;
     }
 
     if (!hasUndo) {
         IupMessage("Undo", "Nothing to undo.");
-        return;
+        return IUP_DEFAULT;
     }
 
     int size = previousWidth * previousHeight * 3;
@@ -98,7 +98,7 @@ void undo(Ihandle *ih)
 
     if (pixels == NULL) {
         IupMessage("Error", "Not enough memory for undo.");
-        return;
+        return IUP_DEFAULT;
     }
 
     memcpy(
@@ -123,6 +123,7 @@ void undo(Ihandle *ih)
     hasUndo = 0;
 
     updateImageDisplay();
+    return IUP_DEFAULT;
 }
 
 
@@ -366,6 +367,29 @@ int grayscale_cb(Ihandle *ih)
 }
 
 
+/* FIX: OK / Cancel handling for the popup dialogs */
+
+static int dialogConfirmed = 0;
+
+static int dialogOk_cb(Ihandle *ih)
+{
+    (void)ih;
+
+    dialogConfirmed = 1;
+
+    return IUP_CLOSE;
+}
+
+static int dialogCancel_cb(Ihandle *ih)
+{
+    (void)ih;
+
+    dialogConfirmed = 0;
+
+    return IUP_CLOSE;
+}
+
+
 /* 
    BRIGHTNESS 
    */
@@ -440,14 +464,16 @@ int brightness_cb(Ihandle *ih)
     IupSetCallback(
         ok,
         "ACTION",
-        (Icallback)IupExitLoop
+        (Icallback)dialogOk_cb          /* FIX */
     );
 
     IupSetCallback(
         cancel,
         "ACTION",
-        (Icallback)IupExitLoop
+        (Icallback)dialogCancel_cb      /* FIX */
     );
+
+    dialogConfirmed = 0;                /* FIX */
 
     IupPopup(
         dialog,
@@ -464,6 +490,9 @@ int brightness_cb(Ihandle *ih)
     int level = atoi(levelValue);
 
     IupDestroy(dialog);
+
+    if (!dialogConfirmed)               /* FIX */
+        return IUP_DEFAULT;             /* FIX */
 
     if (level < -255 || level > 255) {
         IupMessage(
@@ -743,14 +772,17 @@ int crop_cb(Ihandle *ih)
     IupSetCallback(
         ok,
         "ACTION",
-        (Icallback)IupExitLoop
+        (Icallback)dialogOk_cb          /* FIX */
     );
 
     IupSetCallback(
         cancel,
         "ACTION",
-        (Icallback)IupExitLoop
+        (Icallback)dialogCancel_cb      /* FIX */
     );
+
+
+    dialogConfirmed = 0;                /* FIX */
 
 
     IupPopup(
@@ -796,6 +828,10 @@ int crop_cb(Ihandle *ih)
 
 
     IupDestroy(dialog);
+
+
+    if (!dialogConfirmed)               /* FIX */
+        return IUP_DEFAULT;             /* FIX */
 
 
     if (startX < 0 ||
@@ -1108,6 +1144,15 @@ int main(int argc, char **argv)
             NULL
         );
 
+    Ihandle *versionLabel =
+        IupLabel("Version 3.0");
+
+    IupSetAttribute(
+        versionLabel,
+        "ALIGNMENT",
+        "ALEFT"
+    );
+
 
     IupSetAttribute(
         controls,
@@ -1120,6 +1165,7 @@ int main(int argc, char **argv)
 
     Ihandle *mainBox =
         IupVbox(
+            versionLabel,
             controls,
             imageBox,
             NULL

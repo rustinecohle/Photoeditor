@@ -1,64 +1,37 @@
 #include <stdio.h>
 #include <stdlib.h>
-
 #include "openbmp.h"
 
 
-BMPImage *openBMP(const char *filename)
-{
-    FILE *file;
-
-    file = fopen(filename, "rb");
-
-    if (file == NULL) {
-        printf("Cannot open file.\n");
+BMPImage *openBMP(const char *filename){
+    FILE *file ;
+    file =fopen (filename, "rb");
+    if (file == NULL){
+        printf("cannot open file\n");
         return NULL;
     }
-
-    BMPImage *image = malloc(sizeof(BMPImage));
-
-    if (image == NULL) {
+    BMPImage *image =malloc(sizeof(BMPImage));
+    if (image ==NULL){
         fclose(file);
         return NULL;
+
     }
+    fread (&image->fileheader, sizeof(BMPFileHeader),1,file);
+    fread(&image->infoheader, sizeof(BMPInfoHeader), 1, file);
+    if (image->fileheader.type !=0x4D42){
+        printf("this is not a bmp file \n");
+        fclose(file);
+        free(image);
+        return NULL;
 
-    fread(
-        &image->fileheader,
-        sizeof(BMPFileHeader),
-        1,
-        file
-    );
-
-    fread(
-        &image->infoheader,
-        sizeof(BMPInfoHeader),
-        1,
-        file
-    );
-
-
-    if (image->fileheader.type != 0x4D42) {
-
-        printf("This is not a BMP file.\n");
-
+    }
+    if (image->infoheader.bitperpixel !=24){
+        printf("only 24 bit format\n");
         fclose(file);
         free(image);
 
         return NULL;
     }
-
-
-    if (image->infoheader.bitsperpixel != 24) {
-
-        printf("Only 24-bit BMP images are supported.\n");
-
-        fclose(file);
-        free(image);
-
-        return NULL;
-    }
-
-
     if (image->infoheader.compression != 0) {
 
         printf("Compressed BMP files are not supported.\n");
@@ -68,43 +41,21 @@ BMPImage *openBMP(const char *filename)
 
         return NULL;
     }
+    image->width=image->infoheader.width;
+    image->height =image->infoheader.height;
+    int width =image->width;
+    int height =image->height;
+    int padding =(4-(width*3)%4)%4;
+    image->pixels=malloc(width*height*3);
+    if(image->pixels==NULL)
+        {
+            fclose(file);
+            free(image);
+            return NULL;
 
-
-    image->width =
-        image->infoheader.width;
-
-    image->height =
-        image->infoheader.height;
-
-
-    int width = image->width;
-    int height = image->height;
-
-    int padding =
-        (4 - (width * 3) % 4) % 4;
-
-
-    image->pixels =
-        malloc(width * height * 3);
-
-
-    if (image->pixels == NULL) {
-
-        fclose(file);
-        free(image);
-
-        return NULL;
-    }
-
-
-    fseek(
-        file,
-        image->fileheader.dataoffset,
-        SEEK_SET
-    );
-
-
-    unsigned char pixel[3];
+        }
+        fseek(file , image->fileheader.dataoffset,SEEK_SET);
+            unsigned char pixel[3];
 
 
     /*
@@ -158,9 +109,15 @@ BMPImage *openBMP(const char *filename)
 }
 
 
+void freeBMP(BMPImage*image){
+    if (image!=NULL){
+        free(image->pixels);
+        free(image);
 
-int saveBMP(const char *filename, BMPImage *image)
-{
+    }
+}
+int saveBMP(const char *filename, BMPImage *image){
+
     if (image == NULL)
         return 0;
 
@@ -281,16 +238,8 @@ int saveBMP(const char *filename, BMPImage *image)
     printf("BMP saved successfully.\n");
 
     return 1;
-}
 
 
 
-void freeBMP(BMPImage *image)
-{
-    if (image != NULL) {
 
-        free(image->pixels);
-
-        free(image);
-    }
 }
