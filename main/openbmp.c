@@ -107,13 +107,7 @@ BMPImage *openBMP(const char *filename)
     unsigned char pixel[3];
 
 
-    /*
-       BMP normally stores rows from
-       bottom to top.
 
-       We store them internally
-       from top to bottom.
-    */
 
     for (int y = 0; y < height; y++) {
 
@@ -198,9 +192,7 @@ int saveBMP(const char *filename, BMPImage *image)
         imageSize;
 
 
-    /*
-       Update header
-    */
+
 
     image->fileheader.filesize =
         fileSize;
@@ -232,10 +224,7 @@ int saveBMP(const char *filename, BMPImage *image)
         {0, 0, 0};
 
 
-    /*
-       Convert RGB back to
-       bottom-up BGR.
-    */
+
 
     for (int y = height - 1; y >= 0; y--) {
 
